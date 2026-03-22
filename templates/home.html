@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<button onclick="getLocation()">📍 Use My Location</button>
+
+<form id="locForm" method="POST" action="/weather">
+    <input type="hidden" name="lat" id="lat">
+    <input type="hidden" name="lon" id="lon">
+</form>
+
+<p id="status"></p>
+
+<script>
+function getLocation() {
+    const status = document.getElementById("status");
+
+    if (!navigator.geolocation) {
+        status.innerText = "Geolocation not supported";
+        return;
+    }
+
+    status.innerText = "Getting location...";
+
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+            document.getElementById("lat").value = position.coords.latitude;
+            document.getElementById("lon").value = position.coords.longitude;
+
+            document.getElementById("locForm").submit();
+        },
+        () => {
+            status.innerText = "Permission denied or failed";
+        }
+    );
+}
+</script>
+
+{% endblock %}
