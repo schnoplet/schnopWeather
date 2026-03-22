@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<button onclick="getLocation()">📍 Use My Location</button>
+<button onclick="getLocation()">Use My Location</button>
 
 <form id="locForm" method="POST" action="/weather">
     <input type="hidden" name="lat" id="lat">
@@ -12,7 +12,7 @@
 <p id="status"></p>
 
 {% if error %}
-<p style="color:red;">{{ error }}</p>
+<p style="color:#ff6b6b;">{{ error }}</p>
 {% endif %}
 
 <script>
@@ -24,7 +24,7 @@ function getLocation() {
         return;
     }
 
-    status.innerText = "Getting location...";
+    status.innerText = "Getting your cozy location...";
 
     navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -33,7 +33,7 @@ function getLocation() {
 
             document.getElementById("locForm").submit();
         },
-        (error) => {
+        () => {
             status.innerText = "Permission denied or failed";
         }
     );

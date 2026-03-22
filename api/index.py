@@ -1,7 +1,12 @@
 from flask import Flask, render_template, request
 import requests
+import os
 
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    template_folder=os.path.join(os.path.dirname(__file__), "../templates"),
+    static_folder=os.path.join(os.path.dirname(__file__), "../static")
+)
 
 def get_weather(lat, lon):
     url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current_weather=true"
@@ -37,5 +42,6 @@ def weather():
         lon=lon
     )
 
-if __name__ == "__main__":
-    app.run(debug=True)
+# Vercel handler
+def handler(environ, start_response):
+    return app(environ, start_response)

@@ -1,49 +1,58 @@
 body {
-    font-family: Arial, sans-serif;
-    background: linear-gradient(to right, #74ebd5, #ACB6E5);
+    font-family: 'Quicksand', sans-serif;
+    background: linear-gradient(135deg, #ffd6e0, #d6f0ff);
     text-align: center;
-    color: #333;
+    color: #5a4a4a;
     margin: 0;
     padding: 0;
 }
 
 h1 {
     margin-top: 40px;
+    font-weight: 600;
 }
 
 button {
-    padding: 12px 18px;
+    padding: 12px 20px;
     font-size: 16px;
-    background: #333;
-    color: white;
+    background: #ffb6c1;
+    color: #5a4a4a;
     border: none;
+    border-radius: 999px;
     cursor: pointer;
-    border-radius: 6px;
     margin-top: 20px;
+    transition: 0.2s;
 }
 
 button:hover {
-    background: #555;
+    background: #ffa6b5;
+    transform: scale(1.05);
 }
 
 .card {
     margin: 30px auto;
-    padding: 20px;
-    width: 220px;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    padding: 25px;
+    width: 240px;
+    background: #fff0f5;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
 }
 
 .coords {
     font-size: 12px;
-    color: #666;
+    color: #8a7a7a;
     margin-top: 10px;
 }
 
 a {
     display: block;
     margin-top: 20px;
-    color: blue;
+    color: #7aa7c7;
     text-decoration: none;
+}
+
+#status {
+    margin-top: 15px;
+    font-size: 14px;
+    color: #7a6a6a;
 }
