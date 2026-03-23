@@ -8,11 +8,22 @@ app = Flask(
     static_folder=os.path.join(os.path.dirname(__file__), "../static")
 )
 
-def get_coords(place):
-    """Use Nominatim API to get lat/lon from place name."""
+def get_country_from_ip(ip):
+    """Get user country code from IP using ipapi.co"""
+    try:
+        res = requests.get(f"https://ipapi.co/{ip}/json/", timeout=3)
+        data = res.json()
+        return data.get("country_code", None)  # e.g., 'NZ'
+    except:
+        return None
+
+def get_coords(place, country_code=None):
+    """Use Nominatim to get lat/lon; bias by country_code if given."""
     try:
         url = "https://nominatim.openstreetmap.org/search"
         params = {"q": place, "format": "json", "limit": 1}
+        if country_code:
+            params["countrycodes"] = country_code
         res = requests.get(url, params=params, timeout=5)
         data = res.json()
         if not data:
@@ -40,7 +51,11 @@ def weather():
     if not place:
         return render_template("home.html", error="Please enter a location")
 
-    lat, lon = get_coords(place)
+    # get user IP from request (x-forwarded-for on Vercel)
+    ip = request.headers.get("x-forwarded-for", request.remote_addr)
+    country_code = get_country_from_ip(ip)
+
+    lat, lon = get_coords(place, country_code)
     if lat is None:
         return render_template("home.html", error="Location not found")
 
