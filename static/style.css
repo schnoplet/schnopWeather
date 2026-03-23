@@ -12,6 +12,16 @@ h1 {
     font-weight: 600;
 }
 
+input[type=text] {
+    padding: 12px 20px;
+    font-size: 16px;
+    border-radius: 999px;
+    border: 1px solid #ccc;
+    width: 200px;
+    margin-top: 20px;
+    text-align: center;
+}
+
 button {
     padding: 12px 20px;
     font-size: 16px;
@@ -20,7 +30,7 @@ button {
     border: none;
     border-radius: 999px;
     cursor: pointer;
-    margin-top: 20px;
+    margin-left: 10px;
     transition: 0.2s;
 }
 
@@ -49,10 +59,4 @@ a {
     margin-top: 20px;
     color: #7aa7c7;
     text-decoration: none;
-}
-
-#status {
-    margin-top: 15px;
-    font-size: 14px;
-    color: #7a6a6a;
 }
