@@ -20,7 +20,7 @@ def get_country_from_ip(ip):
         return None
 
 def get_coords(place, country_code=None):
-    """Use Nominatim to get lat/lon; bias by country_code if given."""
+    """Use Nominatim to get lat/lon and display name; bias by country_code if given."""
     try:
         url = "https://nominatim.openstreetmap.org/search"
         params = {"q": place, "format": "json", "limit": 1}
@@ -29,10 +29,13 @@ def get_coords(place, country_code=None):
         res = requests.get(url, params=params, timeout=5, headers=HEADERS)
         data = res.json()
         if not data:
-            return None, None
-        return float(data[0]["lat"]), float(data[0]["lon"])
+            return None, None, None
+        lat = float(data[0]["lat"])
+        lon = float(data[0]["lon"])
+        display_name = data[0]["display_name"]  # full resolved name
+        return lat, lon, display_name
     except:
-        return None, None
+        return None, None, None
 
 def get_weather(lat, lon):
     url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current_weather=true"
@@ -56,7 +59,7 @@ def weather():
     ip = request.headers.get("x-forwarded-for", request.remote_addr)
     country_code = get_country_from_ip(ip)
 
-    lat, lon = get_coords(place, country_code)
+    lat, lon, display_name = get_coords(place, country_code)
     if lat is None:
         return render_template("home.html", error="Location not found")
 
@@ -64,13 +67,18 @@ def weather():
     if not weather:
         return render_template("home.html", error="Weather unavailable")
 
+    # extract city + country from display_name
+    # example: "Hamilton, Waikato, New Zealand" -> "Hamilton, New Zealand"
+    parts = display_name.split(",")
+    city_country = f"{parts[0].strip()}, {parts[-1].strip()}"
+
     return render_template(
         "result.html",
         temp=weather["temperature"],
         wind=weather["windspeed"],
         lat=lat,
         lon=lon,
-        place=place
+        place=city_country
     )
 
 app = app

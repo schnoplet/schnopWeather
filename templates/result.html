@@ -2,14 +2,14 @@
 
 {% block content %}
 
-<h2>Your Weather in {{ place }}</h2>
+<h2>Weather in {{ place }}</h2>
 
 <div class="card">
-    <p>Temperature: {{ temp }}°C</p>
-    <p>Wind Speed: {{ wind }} km/h</p>
+    <p>🌡 Temperature: {{ temp }}°C</p>
+    <p>💨 Wind Speed: {{ wind }} km/h</p>
 </div>
 
-<p class="coords">📍 {{ lat }}, {{ lon }}</p>
+<p class="coords"> Coordinates used: {{ lat }}, {{ lon }}</p>
 
 <a href="/">Recheck</a>
 
