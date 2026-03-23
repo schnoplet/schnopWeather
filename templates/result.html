@@ -1,16 +1,46 @@
 {% extends "base.html" %}
 
 {% block content %}
+<section class="result-card">
+    <div class="result-top">
+        <span class="eyebrow">live weather</span>
+        <h1>Weather in {{ resolved_place }}</h1>
+        <p class="lede result-lede">
+            {{ weather_emoji }} {{ weather_label }}
+        </p>
+    </div>
 
-<h2>Weather in {{ place }}</h2>
+    <div class="weather-hero">
+        <div class="weather-icon">{{ weather_emoji }}</div>
+        <div class="weather-meta">
+            <p class="weather-label">{{ weather_label }}</p>
+            {% if weather_time %}
+            <p class="weather-time">Updated {{ weather_time }}</p>
+            {% endif %}
+        </div>
+    </div>
 
-<div class="card">
-    <p>🌡 Temperature: {{ temp }}°C</p>
-    <p>💨 Wind Speed: {{ wind }} km/h</p>
-</div>
+    <div class="metrics">
+        <div class="metric-card">
+            <span class="metric-label">Temperature</span>
+            <strong class="metric-value">{{ temperature }}°C</strong>
+        </div>
 
-<p class="coords"> Coordinates used: {{ lat }}, {{ lon }}</p>
+        {% if feels_like is not none %}
+        <div class="metric-card">
+            <span class="metric-label">Feels like</span>
+            <strong class="metric-value">{{ feels_like }}°C</strong>
+        </div>
+        {% endif %}
 
-<a href="/">Recheck</a>
+        <div class="metric-card">
+            <span class="metric-label">Wind</span>
+            <strong class="metric-value">{{ wind_speed }} km/h</strong>
+        </div>
+    </div>
 
+    <p class="coords">Coordinates: {{ lat }}, {{ lon }}</p>
+
+    <a class="back-link" href="/">Check another place</a>
+</section>
 {% endblock %}

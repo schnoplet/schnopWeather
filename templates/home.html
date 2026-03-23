@@ -1,16 +1,174 @@
 {% extends "base.html" %}
 
 {% block content %}
+<section class="hero-card">
+    <div class="hero-copy">
+        <span class="eyebrow">cozy lookup · smart location guesser</span>
+        <h1>Type a place and schnopWeather sorts it out.</h1>
+        <p class="lede">
+            Try something simple like <strong>Hamilton</strong> and it will try the most sensible match,
+            using your IP country as a hint when that helps.
+        </p>
+    </div>
 
-<form id="locForm" method="POST" action="/weather">
-    <input type="text" name="place" placeholder="Enter your city or town" required>
-    <button type="submit">Find my weather</button>
-</form>
+    <form id="weatherForm" class="search-form" method="POST" action="/weather" autocomplete="off">
+        <label class="sr-only" for="place">Location</label>
 
-<p id="status">Waiting for you to enter a location...</p>
+        <div class="search-wrap">
+            <div class="input-row">
+                <input
+                    id="place"
+                    name="place"
+                    type="text"
+                    placeholder="Hamilton, NZ"
+                    spellcheck="false"
+                    autocomplete="off"
+                    required
+                />
+                <button type="submit">Get weather</button>
+            </div>
 
-{% if error %}
-<p style="color:#ff6b6b;">{{ error }}</p>
-{% endif %}
+            <div id="suggestions" class="suggestions" aria-live="polite"></div>
+        </div>
+    </form>
 
+    {% if error %}
+    <div class="error-box">{{ error }}</div>
+    {% endif %}
+
+    <div class="chips">
+        <button type="button" class="chip" data-place="Hamilton">Hamilton</button>
+        <button type="button" class="chip" data-place="Auckland">Auckland</button>
+        <button type="button" class="chip" data-place="New York">New York</button>
+        <button type="button" class="chip" data-place="Sydney">Sydney</button>
+    </div>
+
+    <p class="tiny-note">Autocomplete updates while you type. Click a suggestion to use it.</p>
+</section>
+
+<script>
+const form = document.getElementById("weatherForm");
+const input = document.getElementById("place");
+const suggestionsEl = document.getElementById("suggestions");
+const countryHint = "{{ country_code or '' }}";
+
+let debounceTimer = null;
+let activeController = null;
+
+function escapeHtml(value) {
+    return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+function clearSuggestions() {
+    suggestionsEl.innerHTML = "";
+    suggestionsEl.classList.remove("open");
+}
+
+function renderSuggestions(items) {
+    suggestionsEl.innerHTML = "";
+
+    if (!items || !items.length) {
+        clearSuggestions();
+        return;
+    }
+
+    items.forEach((item) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "suggestion";
+
+        const subtitle = item.subtitle ? `<span class="suggestion-sub">${escapeHtml(item.subtitle)}</span>` : "";
+
+        btn.innerHTML = `
+            <span class="suggestion-main">${escapeHtml(item.label)}</span>
+            ${subtitle}
+        `;
+
+        btn.addEventListener("click", () => {
+            input.value = item.query || item.label || "";
+            clearSuggestions();
+            form.submit();
+        });
+
+        suggestionsEl.appendChild(btn);
+    });
+
+    suggestionsEl.classList.add("open");
+}
+
+async function fetchSuggestions(q) {
+    if (activeController) {
+        activeController.abort();
+    }
+
+    activeController = new AbortController();
+
+    const params = new URLSearchParams();
+    params.set("q", q);
+    if (countryHint) {
+        params.set("country", countryHint);
+    }
+
+    const res = await fetch(`/suggest?${params.toString()}`, {
+        signal: activeController.signal
+    });
+
+    if (!res.ok) {
+        return [];
+    }
+
+    return await res.json();
+}
+
+input.addEventListener("input", () => {
+    clearTimeout(debounceTimer);
+
+    const q = input.value.trim();
+    if (q.length < 2) {
+        clearSuggestions();
+        return;
+    }
+
+    debounceTimer = setTimeout(async () => {
+        try {
+            const items = await fetchSuggestions(q);
+            renderSuggestions(items);
+        } catch (err) {
+            if (err.name !== "AbortError") {
+                clearSuggestions();
+            }
+        }
+    }, 220);
+});
+
+input.addEventListener("focus", () => {
+    if (input.value.trim().length >= 2 && suggestionsEl.children.length) {
+        suggestionsEl.classList.add("open");
+    }
+});
+
+document.addEventListener("click", (event) => {
+    if (!event.target.closest(".search-wrap")) {
+        clearSuggestions();
+    }
+});
+
+document.querySelectorAll(".chip").forEach((chip) => {
+    chip.addEventListener("click", () => {
+        input.value = chip.dataset.place;
+        input.focus();
+        clearSuggestions();
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+});
+
+form.addEventListener("submit", () => {
+    clearSuggestions();
+});
+</script>
 {% endblock %}
