@@ -22,10 +22,60 @@
                 <span class="brand-dot"></span>
                 <span>schnopWeather</span>
             </div>
-            <p class="brand-subtitle">pastel weather with a tiny bit of attitude</p>
+            <p class="brand-subtitle" id="subtitle"></p>
         </header>
 
         {% block content %}{% endblock %}
     </main>
+
+    <script>
+        const subtitles = [
+            "cooler than looking out a window",
+            "pastel forecasts, no drama",
+            "weather, but make it cute"
+        ];
+
+        const el = document.getElementById("subtitle");
+
+        let textIndex = 0;
+        let charIndex = 0;
+        let deleting = false;
+        let wait = 0;
+
+        function tick() {
+            const fullText = subtitles[textIndex];
+
+            if (wait > 0) {
+                wait--;
+                setTimeout(tick, 60);
+                return;
+            }
+
+            if (!deleting) {
+                charIndex++;
+                el.textContent = fullText.slice(0, charIndex);
+
+                if (charIndex >= fullText.length) {
+                    deleting = true;
+                    wait = 18;
+                }
+            } else {
+                charIndex--;
+                el.textContent = fullText.slice(0, charIndex);
+
+                if (charIndex <= 0) {
+                    deleting = false;
+                    textIndex = (textIndex + 1) % subtitles.length;
+                    wait = 10;
+                }
+            }
+
+            const speed = deleting ? 35 : 45;
+            setTimeout(tick, speed);
+        }
+
+        el.textContent = "";
+        tick();
+    </script>
 </body>
 </html>
