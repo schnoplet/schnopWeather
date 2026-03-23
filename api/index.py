@@ -42,5 +42,5 @@ def weather():
         lon=lon
     )
 
-# 👇 THIS is what Vercel needs
+# Vercel expects this export
 app = app
