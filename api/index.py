@@ -8,12 +8,14 @@ app = Flask(
     static_folder=os.path.join(os.path.dirname(__file__), "../static")
 )
 
+HEADERS = {"User-Agent": "schnopWeather/1.0 (+https://yourdomain.com)"}
+
 def get_country_from_ip(ip):
     """Get user country code from IP using ipapi.co"""
     try:
         res = requests.get(f"https://ipapi.co/{ip}/json/", timeout=3)
         data = res.json()
-        return data.get("country_code", None)  # e.g., 'NZ'
+        return data.get("country_code", None)
     except:
         return None
 
@@ -24,7 +26,7 @@ def get_coords(place, country_code=None):
         params = {"q": place, "format": "json", "limit": 1}
         if country_code:
             params["countrycodes"] = country_code
-        res = requests.get(url, params=params, timeout=5)
+        res = requests.get(url, params=params, timeout=5, headers=HEADERS)
         data = res.json()
         if not data:
             return None, None
@@ -51,7 +53,6 @@ def weather():
     if not place:
         return render_template("home.html", error="Please enter a location")
 
-    # get user IP from request (x-forwarded-for on Vercel)
     ip = request.headers.get("x-forwarded-for", request.remote_addr)
     country_code = get_country_from_ip(ip)
 
