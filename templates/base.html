@@ -22,7 +22,11 @@
                 <span class="brand-dot"></span>
                 <span>schnopWeather</span>
             </div>
-            <p class="brand-subtitle" id="subtitle"></p>
+
+            <p class="brand-subtitle">
+                <span class="subtitle-cursor" id="subtitleCursor">|</span>
+                <span id="subtitleText"></span>
+            </p>
         </header>
 
         {% block content %}{% endblock %}
@@ -31,51 +35,98 @@
     <script>
         const subtitles = [
             "cooler than looking out a window",
-            "pastel forecasts, no drama",
-            "weather, but make it cute"
+            "weather, but make it cute",
+            "tiny forecasts, big vibe"
         ];
 
-        const el = document.getElementById("subtitle");
+        const textEl = document.getElementById("subtitleText");
+        const cursorEl = document.getElementById("subtitleCursor");
 
-        let textIndex = 0;
-        let charIndex = 0;
+        let currentLine = 0;
+        let text = "";
+        let typing = true;
         let deleting = false;
-        let wait = 0;
+        let pause = 0;
+
+        function render() {
+            textEl.textContent = text;
+        }
 
         function tick() {
-            const fullText = subtitles[textIndex];
+            const full = subtitles[currentLine];
 
-            if (wait > 0) {
-                wait--;
-                setTimeout(tick, 60);
+            if (pause > 0) {
+                pause--;
+                setTimeout(tick, 70);
+                return;
+            }
+
+            if (typing) {
+                text += full.charAt(text.length);
+                render();
+
+                if (text.length >= full.length) {
+                    typing = false;
+                    pause = 18;
+                }
+
+                setTimeout(tick, 45);
                 return;
             }
 
             if (!deleting) {
-                charIndex++;
-                el.textContent = fullText.slice(0, charIndex);
-
-                if (charIndex >= fullText.length) {
-                    deleting = true;
-                    wait = 18;
-                }
-            } else {
-                charIndex--;
-                el.textContent = fullText.slice(0, charIndex);
-
-                if (charIndex <= 0) {
-                    deleting = false;
-                    textIndex = (textIndex + 1) % subtitles.length;
-                    wait = 10;
-                }
+                deleting = true;
             }
 
-            const speed = deleting ? 35 : 45;
-            setTimeout(tick, speed);
+            if (text.length > 0) {
+                text = text.slice(1);
+                render();
+                setTimeout(tick, 28);
+                return;
+            }
+
+            deleting = false;
+            typing = true;
+            currentLine = (currentLine + 1) % subtitles.length;
+            pause = 8;
+            setTimeout(tick, 45);
         }
 
-        el.textContent = "";
+        render();
         tick();
     </script>
+
+    <style>
+        .brand-subtitle {
+            display: flex;
+            align-items: center;
+            gap: 0.15rem;
+            min-height: 1.4em;
+            margin: 0;
+            color: var(--muted);
+            font-size: 0.95rem;
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .subtitle-cursor {
+            display: inline-block;
+            width: 0.7ch;
+            animation: blink 0.9s steps(1) infinite;
+            color: var(--accent);
+            flex: 0 0 auto;
+        }
+
+        @keyframes blink {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0; }
+        }
+
+        @media (max-width: 760px) {
+            .brand-subtitle {
+                text-align: left;
+            }
+        }
+    </style>
 </body>
 </html>
