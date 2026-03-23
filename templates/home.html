@@ -3,11 +3,10 @@
 {% block content %}
 <section class="hero-card">
     <div class="hero-copy">
-        <span class="eyebrow">cozy lookup · smart location guesser</span>
-        <h1>Type a place and schnopWeather sorts it out.</h1>
+        <span class="eyebrow">made by schnoplet</span>
+        <h1>schnopWeather sorts it out.</h1>
         <p class="lede">
-            Try something simple like <strong>Hamilton</strong> and it will try the most sensible match,
-            using your IP country as a hint when that helps.
+            Enter any location.
         </p>
     </div>
 
@@ -20,7 +19,7 @@
                     id="place"
                     name="place"
                     type="text"
-                    placeholder="Hamilton, NZ"
+                    placeholder="Country, city, suburb, anything works!"
                     spellcheck="false"
                     autocomplete="off"
                     required
@@ -37,9 +36,9 @@
     {% endif %}
 
     <div class="chips">
-        <button type="button" class="chip" data-place="Hamilton">Hamilton</button>
-        <button type="button" class="chip" data-place="Auckland">Auckland</button>
-        <button type="button" class="chip" data-place="New York">New York</button>
+        <button type="button" class="chip" data-place="Tokyo">Tokyo</button>
+        <button type="button" class="chip" data-place="London">London</button>
+        <button type="button" class="chip" data-place="New York">NYC</button>
         <button type="button" class="chip" data-place="Sydney">Sydney</button>
     </div>
 
